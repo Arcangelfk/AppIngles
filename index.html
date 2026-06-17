@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Habla Inglés Real</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        darkBg: '#0d1117',
+                        surface: '#161b22',
+                        surfaceHover: '#1f2937',
+                        accent: '#7c3aed',
+                        accentLight: '#8b5cf6',
+                        neon: '#3b82f6',
+                        success: '#10b981',
+                        warn: '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-darkBg text-white font-sans h-screen w-screen overflow-hidden flex justify-center relative">
+
+    <!-- Ambient Gradients -->
+    <div class="absolute top-0 right-0 w-72 h-72 bg-accent/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-20 left-0 w-72 h-72 bg-neon/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <!-- ========================================================= -->
+    <!-- AUTH CONTAINER                                             -->
+    <!-- ========================================================= -->
+    <div id="authContainer" class="w-full max-w-md h-full flex flex-col justify-center px-6 z-10 transition-opacity duration-500">
+        <div id="loginView" class="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-accent to-neon rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-accent/30">
+                    <i data-lucide="mic-vocal" class="w-8 h-8 text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white">Habla Inglés Real</h1>
+                <p class="text-gray-400 text-sm mt-1">Aprende con tu voz</p>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">Número de celular</label>
+                    <div class="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-accentLight transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4 text-gray-500 mr-2 shrink-0"></i>
+                        <span class="text-gray-400 text-sm pr-2 mr-2 border-r border-white/10">+57</span>
+                        <input type="tel" id="loginPhone" class="flex-1 py-3 bg-transparent text-white placeholder-gray-600 text-sm outline-none" placeholder="300 123 4567" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">Contraseña</label>
+                    <div class="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-accentLight transition-colors">
+                        <i data-lucide="lock" class="w-4 h-4 text-gray-500 mr-2 shrink-0"></i>
+                        <input type="password" id="loginPass" class="flex-1 py-3 bg-transparent text-white placeholder-gray-600 text-sm outline-none" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <p id="loginError" class="text-red-400 text-xs hidden">Celular o contraseña incorrectos.</p>
+                <button type="submit" class="w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-accent to-neon shadow-lg hover:opacity-90 transition-opacity mt-2 flex items-center justify-center gap-2">
+                    Ingresar <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+            <p class="text-center text-sm text-gray-500 mt-6">¿No tienes cuenta? <button id="goRegister" class="text-accentLight font-semibold hover:underline">Regístrate</button></p>
+        </div>
+
+        <div id="registerView" class="hidden w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+            <h2 class="text-2xl font-bold text-center mb-1">Crear cuenta</h2>
+            <p class="text-gray-400 text-sm text-center mb-6">Únete y empieza a aprender</p>
+            <form id="registerForm" class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">Nombre completo</label>
+                    <div class="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-accentLight">
+                        <i data-lucide="user" class="w-4 h-4 text-gray-500 mr-2 shrink-0"></i>
+                        <input type="text" id="regName" class="flex-1 py-3 bg-transparent text-white placeholder-gray-600 text-sm outline-none" placeholder="Tu nombre" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">Número de celular</label>
+                    <div class="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-accentLight">
+                        <i data-lucide="phone" class="w-4 h-4 text-gray-500 mr-2 shrink-0"></i>
+                        <span class="text-gray-400 text-sm pr-2 mr-2 border-r border-white/10">+57</span>
+                        <input type="tel" id="regPhone" class="flex-1 py-3 bg-transparent text-white placeholder-gray-600 text-sm outline-none" placeholder="300 123 4567" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">Contraseña</label>
+                    <div class="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-accentLight">
+                        <i data-lucide="lock" class="w-4 h-4 text-gray-500 mr-2 shrink-0"></i>
+                        <input type="password" id="regPass" class="flex-1 py-3 bg-transparent text-white placeholder-gray-600 text-sm outline-none" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <p id="regError" class="text-red-400 text-xs hidden">Este celular ya está registrado.</p>
+                <p id="regSuccess" class="text-success text-xs hidden">¡Cuenta creada! Inicia sesión.</p>
+                <button type="submit" class="w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-neon to-blue-700 shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                    Crear cuenta <i data-lucide="user-plus" class="w-4 h-4"></i>
+                </button>
+            </form>
+            <p class="text-center text-sm text-gray-500 mt-6">¿Ya tienes cuenta? <button id="goLogin" class="text-accentLight font-semibold hover:underline">Inicia sesión</button></p>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- APP CONTAINER                                              -->
+    <!-- ========================================================= -->
+    <div id="appContainer" class="hidden opacity-0 w-full max-w-md h-full flex-col transition-opacity duration-500 z-10">
+
+        <!-- ===== HOME ===== -->
+        <section id="mod-home" class="screen flex flex-col h-full">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-5 pt-6 pb-3 shrink-0">
+                <div>
+                    <p class="text-gray-400 text-xs">¡Hola, <span id="homeGreetName">amigo</span>! 👋</p>
+                    <h2 class="text-xl font-bold">¿Qué quieres aprender hoy?</h2>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center nav-btn" data-target="mod-ajustes">
+                    <i data-lucide="settings" class="w-5 h-5 text-gray-300"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable content -->
+            <div class="flex-1 overflow-y-auto px-5 pb-24 space-y-5">
+
+                <!-- Palabra del día -->
+                <div class="bg-gradient-to-br from-accent/30 to-neon/20 border border-white/10 rounded-3xl p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-1">
+                            <i data-lucide="calendar" class="w-3 h-3"></i> Palabra del día
+                        </span>
+                        <button id="closeDayWord" class="text-gray-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>
+                    <p class="text-3xl font-bold mb-1" id="dayWord">Eventually</p>
+                    <p class="text-accentLight text-sm mb-1" id="dayWordPhonetic">/ɪˈven.tʃu.ə.li/</p>
+                    <p class="text-gray-300 text-sm mb-4" id="dayWordTranslation">Finalmente</p>
+                    <div class="flex gap-2">
+                        <button class="flex-1 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-1.5">
+                            <i data-lucide="volume-2" class="w-4 h-4 text-accentLight"></i> Escuchar
+                        </button>
+                        <button class="flex-1 py-2 bg-accent/80 hover:bg-accent rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-1.5" id="practiceDayWord">
+                            <i data-lucide="mic" class="w-4 h-4"></i> Practicar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Continúa aprendiendo -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Continúa aprendiendo</h3>
+                    <div id="continueSection" class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-white/10 transition-colors">
+                        <div class="w-10 h-10 bg-neon/20 rounded-xl flex items-center justify-center shrink-0">
+                            <i data-lucide="message-square" class="w-5 h-5 text-neon"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-sm">How would it be?</p>
+                            <p class="text-gray-400 text-xs">¿Cómo sería? · Frases comunes</p>
+                        </div>
+                        <button class="shrink-0 px-3 py-1.5 bg-accent/80 hover:bg-accent rounded-lg text-xs font-bold transition-colors">Continuar</button>
+                    </div>
+                </div>
+
+                <!-- Menú Principal (4 opciones) -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Explorar</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="nav-btn text-left bg-gradient-to-br from-accent/30 to-accent/10 border border-accent/30 rounded-2xl p-4 hover:from-accent/40 transition-all active:scale-95" data-target="mod-temas">
+                            <div class="p-2 bg-accent/20 rounded-xl w-fit mb-3"><i data-lucide="layout-grid" class="w-5 h-5 text-accentLight"></i></div>
+                            <p class="font-bold text-sm">Temas de práctica</p>
+                            <p class="text-gray-400 text-xs mt-0.5">7 categorías</p>
+                        </button>
+                        <button class="nav-btn text-left bg-gradient-to-br from-neon/30 to-neon/10 border border-neon/30 rounded-2xl p-4 hover:from-neon/40 transition-all active:scale-95" data-target="mod-libre">
+                            <div class="p-2 bg-neon/20 rounded-xl w-fit mb-3"><i data-lucide="pencil-line" class="w-5 h-5 text-neon"></i></div>
+                            <p class="font-bold text-sm">Práctica libre</p>
+                            <p class="text-gray-400 text-xs mt-0.5">Escribe y aprende</p>
+                        </button>
+                        <button class="nav-btn text-left bg-gradient-to-br from-success/30 to-success/10 border border-success/30 rounded-2xl p-4 hover:from-success/40 transition-all active:scale-95" data-target="mod-guardados">
+                            <div class="p-2 bg-success/20 rounded-xl w-fit mb-3"><i data-lucide="bookmark" class="w-5 h-5 text-success"></i></div>
+                            <p class="font-bold text-sm">Mis guardados</p>
+                            <p class="text-gray-400 text-xs mt-0.5">Repasa lo tuyo</p>
+                        </button>
+                        <button class="nav-btn text-left bg-gradient-to-br from-warn/30 to-warn/10 border border-warn/30 rounded-2xl p-4 hover:from-warn/40 transition-all active:scale-95" data-target="mod-historial">
+                            <div class="p-2 bg-warn/20 rounded-xl w-fit mb-3"><i data-lucide="clock" class="w-5 h-5 text-warn"></i></div>
+                            <p class="font-bold text-sm">Historial</p>
+                            <p class="text-gray-400 text-xs mt-0.5">Últimas prácticas</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Racha -->
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="flame" class="w-6 h-6 text-orange-400"></i>
+                        <div>
+                            <p class="font-bold text-sm">5 días de racha</p>
+                            <p class="text-gray-400 text-xs">¡Sigue aprendiendo!</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-accentLight" id="homeTotalWords">0</p>
+                        <p class="text-gray-400 text-xs">palabras guardadas</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TEMAS DE PRÁCTICA ===== -->
+        <section id="mod-temas" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-4 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-home"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <div>
+                    <h2 class="text-xl font-bold">Temas de práctica</h2>
+                    <p class="text-gray-400 text-xs">Elige una categoría para empezar</p>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto px-5 pb-24 space-y-3">
+                <div class="topic-btn bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-colors" data-topic="frases-comunes" data-label="Frases comunes">
+                    <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0 text-2xl">💬</div>
+                    <div class="flex-1"><p class="font-semibold">Frases comunes</p><p class="text-gray-400 text-xs">How would it be? · Once in a while...</p></div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                </div>
+                <div class="topic-btn bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-colors" data-topic="phrasal-verbs" data-label="Phrasal Verbs">
+                    <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center shrink-0 text-2xl">🔗</div>
+                    <div class="flex-1"><p class="font-semibold">Phrasal Verbs</p><p class="text-gray-400 text-xs">Give up · Look forward to...</p></div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                </div>
+                <div class="topic-btn bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-colors" data-topic="verbos" data-label="Verbos">
+                    <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0 text-2xl">⚡</div>
+                    <div class="flex-1"><p class="font-semibold">Verbos</p><p class="text-gray-400 text-xs">To achieve · To manage · To rely...</p></div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                </div>
+                <div class="topic-btn bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-colors" data-topic="expresiones" data-label="Expresiones">
+                    <div class="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center shrink-0 text-2xl">✨</div>
+                    <div class="flex-1"><p class="font-semibold">Expresiones</p><p class="text-gray-400 text-xs">By the way · In other words...</p></div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                </div>
+                <div class="topic-btn bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-colors" data-topic="trabajo" data-label="Inglés para trabajo">
+                    <div class="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center shrink-0 text-2xl">💼</div>
+                    <div class="flex-1"><p class="font-semibold">Inglés para trabajo</p><p class="text-gray-400 text-xs">As per · I'd like to request...</p></div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                </div>
+                <div class="topic-btn bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-colors" data-topic="viajes" data-label="Inglés para viajes">
+                    <div class="w-12 h-12 bg-sky-500/20 rounded-xl flex items-center justify-center shrink-0 text-2xl">✈️</div>
+                    <div class="flex-1"><p class="font-semibold">Inglés para viajes</p><p class="text-gray-400 text-xs">Where is...? · Can I have a...?</p></div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                </div>
+                <div class="topic-btn bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-colors" data-topic="otros" data-label="Otros temas">
+                    <div class="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center shrink-0 text-2xl">🎯</div>
+                    <div class="flex-1"><p class="font-semibold">Otros temas</p><p class="text-gray-400 text-xs">Más categorías próximamente</p></div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== LISTADO DE FRASES ===== -->
+        <section id="mod-listado" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-4 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-temas"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <div>
+                    <h2 id="listadoTitle" class="text-xl font-bold">Frases comunes</h2>
+                    <p class="text-gray-400 text-xs">Selecciona para practicar</p>
+                </div>
+            </div>
+            <div id="listadoItems" class="flex-1 overflow-y-auto px-5 pb-24 space-y-2">
+                <!-- Dinámicamente generado -->
+            </div>
+        </section>
+
+        <!-- ===== PANTALLA DE PRÁCTICA (ítem) ===== -->
+        <section id="mod-practica-item" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-2 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-listado"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <span id="practiceItemCategory" class="text-xs text-gray-400 font-medium">Frases comunes</span>
+            </div>
+            <div class="flex-1 overflow-y-auto px-5 pb-24">
+                <!-- Tarjeta principal -->
+                <div class="bg-gradient-to-br from-accent/20 to-neon/10 border border-white/10 rounded-3xl p-7 text-center mb-5 mt-2">
+                    <h2 id="practicePhrase" class="text-4xl font-bold mb-2 leading-tight">How would it be?</h2>
+                    <p id="practiceTranslation" class="text-accentLight text-lg mb-1">¿Cómo sería?</p>
+                    <p id="practicePhonetic" class="text-gray-400 text-sm font-mono">/hau wud it bi/</p>
+                </div>
+                <!-- Botones de acción -->
+                <div class="grid grid-cols-2 gap-3 mb-5">
+                    <button id="btnEscuchar" class="py-3.5 bg-neon/20 hover:bg-neon/30 border border-neon/30 rounded-2xl font-semibold text-sm text-neon transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="volume-2" class="w-4 h-4"></i> Escuchar
+                    </button>
+                    <button id="btnPracticar" class="py-3.5 bg-accent/80 hover:bg-accent rounded-2xl font-semibold text-sm transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="mic" class="w-4 h-4"></i> Practicar
+                    </button>
+                    <button id="btnGuardar" class="py-3.5 bg-success/20 hover:bg-success/30 border border-success/30 rounded-2xl font-semibold text-sm text-success transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="bookmark" class="w-4 h-4"></i> Guardar
+                    </button>
+                    <button id="btnEjemplos" class="py-3.5 bg-warn/20 hover:bg-warn/30 border border-warn/30 rounded-2xl font-semibold text-sm text-warn transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i> Ver ejemplos
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PRONUNCIACIÓN (Grabación + Resultado) ===== -->
+        <section id="mod-pronunciacion" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-2 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-practica-item"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <span class="text-xs text-gray-400 font-medium">Práctica de pronunciación</span>
+            </div>
+            <div class="flex-1 overflow-y-auto px-5 pb-24 flex flex-col items-center">
+                <!-- Frase a repetir -->
+                <div class="w-full bg-white/5 border border-white/10 rounded-3xl p-6 text-center mb-6 mt-2">
+                    <p class="text-xs text-gray-400 uppercase tracking-widest mb-2">Repite esta frase</p>
+                    <h3 id="pronPhrase" class="text-3xl font-bold mb-2">How would it be?</h3>
+                    <p id="pronPhonetic" class="text-accentLight text-sm font-mono mb-3">/hau wud it bi/</p>
+                    <button id="pronListenBtn" class="mx-auto px-4 py-1.5 bg-neon/20 border border-neon/30 rounded-full text-xs font-semibold text-neon flex items-center gap-1.5" id="pronListenBtn">
+                        <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Escuchar pronunciación
+                    </button>
+                </div>
+
+                <!-- Estado: Esperando -->
+                <div id="pronWaiting" class="flex flex-col items-center w-full">
+                    <p class="text-gray-400 text-sm mb-2">Presiona el micrófono y repite la frase</p>
+                    <!-- Transcript en tiempo real -->
+                    <p id="pronInterim" class="text-accentLight text-sm font-medium italic min-h-[20px] mb-4 text-center transition-all"></p>
+                    <button id="recordPronBtn" class="relative w-36 h-36 rounded-full bg-gradient-to-b from-accent to-violet-700 shadow-[0_0_40px_rgba(124,58,237,0.5)] flex flex-col items-center justify-center transition-all duration-300">
+                        <i data-lucide="mic" class="w-12 h-12 mb-1"></i>
+                        <span id="recordPronText" class="text-sm font-bold">Grabar</span>
+                    </button>
+                </div>
+
+                <!-- Estado: Resultado (oculto) -->
+                <div id="pronResult" class="hidden w-full flex-col items-center">
+                    <div id="pronResultBadge" class="w-28 h-28 rounded-full flex flex-col items-center justify-center mb-4 border-4 shadow-xl">
+                        <span id="pronScore" class="text-4xl font-black">92%</span>
+                    </div>
+                    <h3 id="pronResultLabel" class="text-2xl font-bold mb-2">¡Excelente! 🎉</h3>
+                    <p id="pronResultMsg" class="text-gray-400 text-sm text-center mb-8">Tu pronunciación fue muy buena.</p>
+                    <div class="w-full space-y-3">
+                        <button id="pronRetryBtn" class="w-full py-3.5 bg-white/10 hover:bg-white/20 rounded-2xl font-semibold text-sm transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="rotate-cw" class="w-4 h-4"></i> Escuchar de nuevo
+                        </button>
+                        <button id="pronEjemplosBtn" class="w-full py-3.5 bg-warn/20 hover:bg-warn/30 border border-warn/30 rounded-2xl font-semibold text-sm text-warn transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> Ver ejemplos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== EJEMPLOS GENERADOS POR IA ===== -->
+        <section id="mod-ejemplos" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-2 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-practica-item"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <div>
+                    <h2 class="text-xl font-bold">Ejemplos con IA</h2>
+                    <p class="text-gray-400 text-xs">Generados para ti</p>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex gap-2 px-5 pt-3 pb-1 shrink-0">
+                <button class="ex-tab active px-4 py-1.5 rounded-full text-xs font-bold bg-accent text-white transition-colors" data-ex="0">Ejemplo 1</button>
+                <button class="ex-tab px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-gray-400 hover:bg-white/20 transition-colors" data-ex="1">Ejemplo 2</button>
+                <button class="ex-tab px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-gray-400 hover:bg-white/20 transition-colors" data-ex="2">Ejemplo 3</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-5 pb-24 mt-3">
+                <div id="examplesContainer" class="space-y-4">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PRÁCTICA LIBRE ===== -->
+        <section id="mod-libre" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-4 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-home"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <div>
+                    <h2 class="text-xl font-bold">Práctica libre</h2>
+                    <p class="text-gray-400 text-xs">Escribe en español o inglés</p>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-5 pb-24 flex flex-col">
+                <!-- Historial de sugerencias IA -->
+                <div id="libreHistory" class="flex-1 space-y-3 mb-4 min-h-[120px]">
+                    <div class="text-center text-gray-600 text-sm mt-8">
+                        <i data-lucide="message-circle" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
+                        <p>Escribe una palabra o frase para aprender</p>
+                    </div>
+                </div>
+
+                <!-- Campo de texto fijo arriba del teclado -->
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-3 flex gap-2 items-end mt-auto">
+                    <input id="libreInput" type="text" placeholder="¿Qué quieres aprender hoy?" class="flex-1 bg-transparent text-white placeholder-gray-600 text-sm outline-none py-1.5 resize-none">
+                    <button id="libreSubmit" class="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shrink-0 hover:bg-accentLight transition-colors">
+                        <i data-lucide="send" class="w-4 h-4 text-white"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== MIS GUARDADOS ===== -->
+        <section id="mod-guardados" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-4 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-home"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <div>
+                    <h2 class="text-xl font-bold">Mis guardados</h2>
+                    <p class="text-gray-400 text-xs">Todo lo que has guardado</p>
+                </div>
+            </div>
+
+            <!-- Tabs: Palabras / Expresiones / Frases -->
+            <div class="flex gap-2 px-5 pb-3 shrink-0">
+                <button class="saved-tab active flex-1 py-2 rounded-xl text-xs font-bold bg-accent/80 text-white transition-colors" data-saved-tab="words">Palabras</button>
+                <button class="saved-tab flex-1 py-2 rounded-xl text-xs font-bold bg-white/5 text-gray-400 hover:bg-white/10 transition-colors" data-saved-tab="expressions">Expresiones</button>
+                <button class="saved-tab flex-1 py-2 rounded-xl text-xs font-bold bg-white/5 text-gray-400 hover:bg-white/10 transition-colors" data-saved-tab="phrases">Frases</button>
+            </div>
+
+            <div id="savedContent" class="flex-1 overflow-y-auto px-5 pb-24 space-y-2">
+                <!-- Generado dinámicamente -->
+            </div>
+        </section>
+
+        <!-- ===== HISTORIAL ===== -->
+        <section id="mod-historial" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-4 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-home"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <div><h2 class="text-xl font-bold">Historial</h2><p class="text-gray-400 text-xs">Tus últimas prácticas</p></div>
+            </div>
+            <div id="historialContent" class="flex-1 overflow-y-auto px-5 pb-24 space-y-3">
+                <div class="text-center text-gray-600 text-sm mt-12">
+                    <i data-lucide="clock" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
+                    <p>Tu historial aparecerá aquí</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== AJUSTES / PERFIL ===== -->
+        <section id="mod-ajustes" class="screen hidden flex-col h-full">
+            <div class="flex items-center gap-3 px-5 pt-6 pb-4 shrink-0">
+                <button class="back-btn p-2 rounded-xl bg-white/5 hover:bg-white/10" data-back="mod-home"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <div><h2 class="text-xl font-bold">Perfil y ajustes</h2></div>
+            </div>
+            <div class="flex-1 overflow-y-auto px-5 pb-8 space-y-4">
+                <!-- Avatar -->
+                <div class="flex flex-col items-center bg-white/5 border border-white/10 rounded-3xl p-6 mb-2">
+                    <div class="relative w-20 h-20 mb-3">
+                        <div class="w-full h-full rounded-full bg-gradient-to-tr from-accent to-neon p-0.5">
+                            <div class="w-full h-full rounded-full bg-darkBg flex items-center justify-center">
+                                <i data-lucide="user" class="w-10 h-10 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button class="absolute bottom-0 right-0 w-7 h-7 bg-accent rounded-full flex items-center justify-center border-2 border-darkBg">
+                            <i data-lucide="camera" class="w-3.5 h-3.5 text-white"></i>
+                        </button>
+                    </div>
+                    <h3 id="profileNameDisplay" class="text-xl font-bold">Usuario</h3>
+                    <p id="profilePhoneDisplay" class="text-gray-400 text-sm mt-0.5"></p>
+                    <span id="profilePlanBadge" class="mt-3 px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300 border border-white/10">Plan Gratuito</span>
+                </div>
+
+                <!-- Editar info -->
+                <div class="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+                    <button id="openEditProfile" class="w-full flex items-center justify-between p-4 hover:bg-white/5 border-b border-white/5">
+                        <div class="flex items-center gap-3"><div class="p-2 bg-white/5 rounded-lg"><i data-lucide="user-cog" class="w-4 h-4 text-gray-300"></i></div><span class="font-medium text-sm">Editar información</span></div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                    </button>
+                    <button id="openPlanesBtn" class="w-full flex items-center justify-between p-4 hover:bg-white/5 border-b border-white/5">
+                        <div class="flex items-center gap-3"><div class="p-2 bg-accent/10 rounded-lg"><i data-lucide="crown" class="w-4 h-4 text-accent"></i></div><span class="font-medium text-sm">Planes y suscripción</span></div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                    </button>
+                    <button class="w-full flex items-center justify-between p-4 hover:bg-white/5">
+                        <div class="flex items-center gap-3"><div class="p-2 bg-white/5 rounded-lg"><i data-lucide="bell" class="w-4 h-4 text-gray-300"></i></div><span class="font-medium text-sm">Notificaciones</span></div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                    </button>
+                </div>
+
+                <button id="logoutBtn" class="w-full py-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-2xl text-red-400 font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Cerrar sesión
+                </button>
+            </div>
+        </section>
+
+        <!-- ===== BOTTOM NAV ===== -->
+        <nav class="absolute bottom-0 w-full bg-darkBg/95 backdrop-blur-2xl border-t border-white/10 pt-2 px-4 pb-5 z-40">
+            <ul class="flex justify-between items-center text-[9px] font-medium text-gray-500">
+                <li class="flex-1">
+                    <button class="nav-btn active-nav flex flex-col items-center w-full space-y-1 text-accentLight" data-target="mod-home">
+                        <i data-lucide="home" class="w-5 h-5"></i><span>Inicio</span>
+                    </button>
+                </li>
+                <li class="flex-1">
+                    <button class="nav-btn flex flex-col items-center w-full space-y-1 hover:text-white transition-colors" data-target="mod-temas">
+                        <i data-lucide="layout-grid" class="w-5 h-5"></i><span>Temas</span>
+                    </button>
+                </li>
+                <li class="flex-1">
+                    <button class="nav-btn flex flex-col items-center w-full space-y-1 hover:text-white transition-colors" data-target="mod-libre">
+                        <i data-lucide="pencil-line" class="w-5 h-5"></i><span>Libre</span>
+                    </button>
+                </li>
+                <li class="flex-1">
+                    <button class="nav-btn flex flex-col items-center w-full space-y-1 hover:text-white transition-colors" data-target="mod-guardados">
+                        <i data-lucide="bookmark" class="w-5 h-5"></i><span>Guardados</span>
+                    </button>
+                </li>
+                <li class="flex-1">
+                    <button class="nav-btn flex flex-col items-center w-full space-y-1 hover:text-white transition-colors" data-target="mod-ajustes">
+                        <i data-lucide="user" class="w-5 h-5"></i><span>Perfil</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- PANTALLA: PLANES Y SUSCRIPCIÓN                             -->
+    <!-- ========================================================= -->
+    <div id="mod-planes" class="fixed inset-0 bg-darkBg z-[60] hidden opacity-0 transition-opacity duration-300 flex-col max-w-md mx-auto">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-5 pt-6 pb-4 border-b border-white/10 shrink-0">
+            <button id="closePlanesBtn" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-lg font-bold">Elige tu plan</h2>
+            <div class="w-9"></div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-5 pb-8">
+            <!-- Hero -->
+            <div class="text-center py-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-yellow-500/30">
+                    <i data-lucide="crown" class="w-8 h-8 text-white"></i>
+                </div>
+                <h3 class="text-2xl font-black mb-1">Habla Inglés Real</h3>
+                <p class="text-gray-400 text-sm">Desbloquea todo tu potencial en inglés</p>
+            </div>
+
+            <!-- Plan actual badge -->
+            <div id="currentPlanBadge" class="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center gap-3 mb-6">
+                <i data-lucide="info" class="w-4 h-4 text-gray-400 shrink-0"></i>
+                <p class="text-sm text-gray-300">Tu plan actual: <span id="currentPlanLabel" class="font-bold text-white">Gratuito</span></p>
+            </div>
+
+            <!-- ===== PLAN GRATUITO ===== -->
+            <div class="bg-white/5 border border-white/10 rounded-3xl p-5 mb-4">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg">🆓</span>
+                            <h4 class="font-bold text-lg">Gratuito</h4>
+                        </div>
+                        <p class="text-gray-400 text-xs">Para empezar a aprender</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-black text-white">$0</p>
+                        <p class="text-gray-500 text-xs">Para siempre</p>
+                    </div>
+                </div>
+                <div class="space-y-2.5 mb-4">
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-success shrink-0"></i><span>Acceso a frases básicas</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-success shrink-0"></i><span>5 prácticas de pronunciación por día</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-success shrink-0"></i><span>Guardar hasta 20 palabras</span></div>
+                    <div class="flex items-center gap-2 text-sm text-gray-500"><i data-lucide="x" class="w-4 h-4 shrink-0"></i><span>Sin ejemplos IA ilimitados</span></div>
+                    <div class="flex items-center gap-2 text-sm text-gray-500"><i data-lucide="x" class="w-4 h-4 shrink-0"></i><span>Sin práctica libre ilimitada</span></div>
+                </div>
+                <button class="plan-select-btn w-full py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-bold transition-colors" data-plan="free" data-price="$0" data-name="Gratuito">
+                    Plan actual
+                </button>
+            </div>
+
+            <!-- ===== PLAN PREMIUM MENSUAL ===== -->
+            <div class="bg-gradient-to-br from-accent/20 to-neon/10 border border-accentLight/40 rounded-3xl p-5 mb-4 relative overflow-hidden">
+                <!-- Glow effect -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg">⚡</span>
+                            <h4 class="font-bold text-lg">Premium Mensual</h4>
+                        </div>
+                        <p class="text-gray-300 text-xs">Todo ilimitado, sin ataduras</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-black text-accentLight">$19.900</p>
+                        <p class="text-gray-400 text-xs">COP / mes</p>
+                    </div>
+                </div>
+                <div class="space-y-2.5 mb-4">
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-accentLight shrink-0"></i><span>Pronunciación ilimitada con IA</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-accentLight shrink-0"></i><span>Práctica libre sin restricciones</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-accentLight shrink-0"></i><span>Ejemplos IA ilimitados</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-accentLight shrink-0"></i><span>Guardar palabras ilimitadas</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-accentLight shrink-0"></i><span>Estadísticas avanzadas</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-accentLight shrink-0"></i><span>Sin anuncios</span></div>
+                </div>
+                <button class="plan-select-btn w-full py-3.5 bg-accent hover:bg-accentLight rounded-2xl text-sm font-bold transition-colors shadow-lg shadow-accent/30" data-plan="monthly" data-price="$19.900 COP/mes" data-name="Premium Mensual">
+                    <i data-lucide="zap" class="w-4 h-4 inline mr-1"></i> Suscribirse ahora
+                </button>
+            </div>
+
+            <!-- ===== PLAN PREMIUM ANUAL ===== -->
+            <div class="bg-gradient-to-br from-yellow-500/20 to-orange-500/10 border border-yellow-500/40 rounded-3xl p-5 mb-6 relative overflow-hidden">
+                <!-- Badge MEJOR VALOR -->
+                <div class="absolute top-4 right-4">
+                    <span class="px-2 py-1 bg-yellow-500 text-black text-[10px] font-black rounded-lg uppercase tracking-wide">Mejor valor</span>
+                </div>
+                <!-- Glow effect -->
+                <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="flex items-start justify-between mb-4 pr-20">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg">👑</span>
+                            <h4 class="font-bold text-lg">Premium Anual</h4>
+                        </div>
+                        <p class="text-gray-300 text-xs">El mayor ahorro del año</p>
+                    </div>
+                </div>
+
+                <!-- Precio destacado -->
+                <div class="bg-black/20 rounded-2xl p-3 mb-4 flex items-center justify-between">
+                    <div>
+                        <p class="text-3xl font-black text-yellow-400">$149.900</p>
+                        <p class="text-gray-400 text-xs">COP / año · equivale a $12.491/mes</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-gray-500 text-xs line-through">$238.800</p>
+                        <span class="px-2 py-0.5 bg-success/20 text-success text-xs font-bold rounded-lg">37% OFF</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2.5 mb-4">
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-yellow-400 shrink-0"></i><span>Todo lo de Premium Mensual</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-yellow-400 shrink-0"></i><span>Acceso prioritario a funciones nuevas</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-yellow-400 shrink-0"></i><span>Lecciones personalizadas por IA</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-yellow-400 shrink-0"></i><span>Repaso automático de palabras</span></div>
+                    <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-yellow-400 shrink-0"></i><span>Soporte prioritario</span></div>
+                </div>
+                <button class="plan-select-btn w-full py-3.5 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 rounded-2xl text-sm font-black text-black transition-all shadow-lg shadow-yellow-500/30" data-plan="annual" data-price="$149.900 COP/año" data-name="Premium Anual">
+                    <i data-lucide="crown" class="w-4 h-4 inline mr-1"></i> Obtener Premium Anual
+                </button>
+            </div>
+
+            <!-- Garantía -->
+            <div class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
+                <i data-lucide="shield-check" class="w-5 h-5 text-success shrink-0"></i>
+                <p class="text-xs text-gray-400 leading-relaxed">Cancela cuando quieras. Sin cargos ocultos. Seguridad garantizada en tus pagos.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL: CONFIRMACIÓN DE COMPRA                             -->
+    <!-- ========================================================= -->
+    <div id="purchaseModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] hidden opacity-0 transition-opacity duration-300 flex items-end justify-center">
+        <div class="bg-surface w-full max-w-md rounded-t-3xl p-6 border-t border-white/10 shadow-2xl">
+            <div class="flex justify-center mb-4">
+                <div id="purchaseIcon" class="w-14 h-14 bg-gradient-to-br from-accent to-neon rounded-2xl flex items-center justify-center shadow-lg">
+                    <i data-lucide="crown" class="w-7 h-7 text-white"></i>
+                </div>
+            </div>
+            <h3 class="text-xl font-bold text-center mb-1">Confirmar suscripción</h3>
+            <p id="purchasePlanName" class="text-accentLight font-semibold text-center mb-1">Premium Mensual</p>
+            <p id="purchasePlanPrice" class="text-gray-400 text-sm text-center mb-6">$19.900 COP/mes</p>
+
+            <!-- Métodos de pago -->
+            <div class="mb-5">
+                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3">Método de pago</p>
+                <div class="space-y-2">
+                    <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 transition-colors">
+                        <input type="radio" name="payMethod" value="card" class="accent-accent" checked>
+                        <i data-lucide="credit-card" class="w-4 h-4 text-gray-300"></i>
+                        <span class="text-sm font-medium">Tarjeta de crédito / débito</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 transition-colors">
+                        <input type="radio" name="payMethod" value="pse" class="accent-accent">
+                        <i data-lucide="landmark" class="w-4 h-4 text-gray-300"></i>
+                        <span class="text-sm font-medium">PSE — Débito bancario</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 transition-colors">
+                        <input type="radio" name="payMethod" value="nequi" class="accent-accent">
+                        <span class="text-lg leading-none">📱</span>
+                        <span class="text-sm font-medium">Nequi</span>
+                    </label>
+                </div>
+            </div>
+
+            <button id="confirmPurchaseBtn" class="w-full py-4 bg-gradient-to-r from-accent to-neon rounded-2xl font-bold text-sm transition-all hover:opacity-90 shadow-lg mb-3 flex items-center justify-center gap-2">
+                <i data-lucide="lock" class="w-4 h-4"></i> Confirmar pago seguro
+            </button>
+            <button id="cancelPurchaseBtn" class="w-full py-3 bg-white/5 hover:bg-white/10 rounded-xl text-sm text-gray-400 font-medium transition-colors">Cancelar</button>
+            <p class="text-center text-gray-600 text-xs mt-3">🔒 Pago 100% seguro · Sin cargos ocultos</p>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL: GUARDAR CONTENIDO                                   -->
+    <!-- ========================================================= -->
+    <div id="saveModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-end justify-center">
+        <div class="bg-surface w-full max-w-md rounded-t-3xl p-6 border-t border-white/10 shadow-2xl">
+            <h3 class="text-lg font-bold text-center mb-5">¿Qué quieres guardar?</h3>
+            <div class="space-y-3" id="saveOptions">
+                <!-- Generado dinámicamente -->
+            </div>
+            <button id="closeSaveModal" class="w-full mt-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-sm text-gray-400 font-medium">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL: EDITAR PERFIL                                       -->
+    <!-- ========================================================= -->
+    <div id="editProfileModal" class="fixed inset-0 bg-darkBg/95 z-50 hidden opacity-0 transition-opacity duration-300 flex-col">
+        <div class="flex items-center justify-between p-5 border-b border-white/10">
+            <button id="closeEditProfile" class="p-2 rounded-xl bg-white/5 hover:bg-white/10"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h3 class="font-bold text-lg">Editar perfil</h3>
+            <div class="w-9"></div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-5">
+            <form id="editProfileForm" class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">Nombre completo</label>
+                    <input type="text" id="editName" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-accentLight">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">Correo (opcional)</label>
+                    <input type="email" id="editEmail" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-accentLight" placeholder="correo@ejemplo.com">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">País</label>
+                    <div class="relative">
+                        <select id="editCountry" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none appearance-none">
+                            <option value="CO" class="bg-surface">Colombia</option>
+                            <option value="MX" class="bg-surface">México</option>
+                            <option value="ES" class="bg-surface">España</option>
+                            <option value="AR" class="bg-surface">Argentina</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-3.5 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 font-medium block mb-1">Nivel de inglés</label>
+                    <div class="relative">
+                        <select id="editLevel" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none appearance-none">
+                            <option value="A1" class="bg-surface">A1 — Principiante</option>
+                            <option value="A2" class="bg-surface">A2 — Básico</option>
+                            <option value="B1" class="bg-surface">B1 — Intermedio</option>
+                            <option value="B2" class="bg-surface">B2 — Avanzado</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-3.5 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-4 bg-accent hover:bg-accentLight rounded-xl font-bold transition-colors mt-4 text-sm">Guardar cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="voice-service.js"></script>
+    <script src="gemini-service.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
