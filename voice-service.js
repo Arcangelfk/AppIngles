@@ -21,11 +21,13 @@ const VoiceService = (() => {
     // --------------------------------------------------------
     // ESTADO INTERNO
     // --------------------------------------------------------
-    let _voices       = [];
-    let _englishVoice = null;
-    let _isSpeaking   = false;
-    let _isListening  = false;
-    let _recognition  = null;
+    let _voices          = [];
+    let _englishVoice    = null;
+    let _isSpeaking      = false;
+    let _isListening     = false;
+    let _recognition     = null;
+    let _activeUtterance = null;
+    let _keepAliveTimer  = null;
 
     // Callbacks externos (asignables desde app.js)
     const _callbacks = {
@@ -113,53 +115,76 @@ const VoiceService = (() => {
             // Cancelar cualquier reproducción anterior
             stop();
 
-            const utt       = new SpeechSynthesisUtterance(text.trim());
-            utt.lang        = 'en-US';
-            utt.rate        = options.rate   ?? 0.85;
-            utt.pitch       = options.pitch  ?? 1;
-            utt.volume      = options.volume ?? 1;
+            // Retardo de 80ms para que speechSynthesis.cancel() limpie la cola antes de mandar otra frase en móviles
+            setTimeout(() => {
+                try {
+                    const cleanText = text.trim();
+                    const utt       = new SpeechSynthesisUtterance(cleanText);
+                    utt.lang        = 'en-US';
+                    utt.rate        = options.rate   ?? 0.9; // 0.9 es la velocidad ideal para claridad y fluidez
+                    utt.pitch       = options.pitch  ?? 1;
+                    utt.volume      = options.volume ?? 1;
 
-            // Asignar voz seleccionada si está disponible
-            if (_englishVoice) utt.voice = _englishVoice;
+                    // Asignar voz seleccionada si está disponible
+                    if (_englishVoice) utt.voice = _englishVoice;
 
-            utt.onstart = () => {
-                _isSpeaking = true;
-                log(`▶ Speaking: "${text.substring(0, 50)}..."`);
-                _notify('onSpeakStart', text);
-            };
+                    // Guardar referencia en el scope del servicio para evitar Garbage Collection
+                    _activeUtterance = utt;
 
-            utt.onend = () => {
-                _isSpeaking = false;
-                log('⏹ Speech ended');
-                _notify('onSpeakEnd');
-                resolve();
-            };
+                    utt.onstart = () => {
+                        _isSpeaking = true;
+                        log(`▶ Speaking: "${cleanText.substring(0, 50)}..."`);
+                        _notify('onSpeakStart', cleanText);
+                    };
 
-            utt.onerror = (e) => {
-                _isSpeaking = false;
-                // 'interrupted' es normal cuando cancelamos manualmente
-                if (e.error !== 'interrupted' && e.error !== 'canceled') {
-                    warn('Speech error:', e.error);
-                    _notify('onError', `Error de audio: ${e.error}`);
+                    utt.onend = () => {
+                        if (_keepAliveTimer) {
+                            clearInterval(_keepAliveTimer);
+                            _keepAliveTimer = null;
+                        }
+                        _isSpeaking = false;
+                        _activeUtterance = null;
+                        log('⏹ Speech ended');
+                        _notify('onSpeakEnd');
+                        resolve();
+                    };
+
+                    utt.onerror = (e) => {
+                        if (_keepAliveTimer) {
+                            clearInterval(_keepAliveTimer);
+                            _keepAliveTimer = null;
+                        }
+                        _isSpeaking = false;
+                        _activeUtterance = null;
+                        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+                            warn('Speech error:', e.error);
+                            _notify('onError', `Error de audio: ${e.error}`);
+                        }
+                        _notify('onSpeakEnd');
+                        resolve();
+                    };
+
+                    // Workaround bug Chrome/Samsung: Activar keepAlive sólo para frases largas (> 80 letras)
+                    if (cleanText.length > 80) {
+                        _keepAliveTimer = setInterval(() => {
+                            if (!_isSpeaking) {
+                                clearInterval(_keepAliveTimer);
+                                _keepAliveTimer = null;
+                                return;
+                            }
+                            window.speechSynthesis.pause();
+                            window.speechSynthesis.resume();
+                        }, 10000);
+                    }
+
+                    window.speechSynthesis.speak(utt);
+                } catch (err) {
+                    warn('Error al iniciar speak():', err);
+                    _isSpeaking = false;
+                    _activeUtterance = null;
+                    resolve();
                 }
-                resolve(); // No rechazar, continuar con la app
-            };
-
-            // Workaround bug Chrome: speechSynthesis se pausa si la pestaña pierde foco
-            const keepAlive = setInterval(() => {
-                if (!_isSpeaking) { clearInterval(keepAlive); return; }
-                window.speechSynthesis.pause();
-                window.speechSynthesis.resume();
-            }, 10000);
-
-            utt.onend = () => {
-                _isSpeaking = false;
-                clearInterval(keepAlive);
-                _notify('onSpeakEnd');
-                resolve();
-            };
-
-            window.speechSynthesis.speak(utt);
+            }, 80);
         });
     }
 
@@ -167,7 +192,12 @@ const VoiceService = (() => {
     function stop() {
         if (SUPPORT.synthesis) {
             window.speechSynthesis.cancel();
+            if (_keepAliveTimer) {
+                clearInterval(_keepAliveTimer);
+                _keepAliveTimer = null;
+            }
             _isSpeaking = false;
+            _activeUtterance = null;
         }
     }
 
